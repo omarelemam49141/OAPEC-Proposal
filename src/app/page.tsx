@@ -16,6 +16,7 @@ import {
   ClientSupportSection,
   ClientFooterSection,
 } from "@/components/proposal/ClientProposalSections";
+import { ClientAddonsSection } from "@/components/proposal/ClientAddonsSection";
 
 export default function ProposalPage() {
   return (
@@ -31,6 +32,7 @@ export default function ProposalPage() {
           <ClientScenarioSection />
           <ClientTimelineSection />
           <ClientPricingSection />
+          <ClientAddonsSection />
           <ClientPortfolioSection />
           <ClientInquiriesSection />
           <ClientSupportSection />

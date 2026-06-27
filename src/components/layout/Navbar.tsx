@@ -17,6 +17,7 @@ const clientNav = [
   "scenarios",
   "timeline",
   "pricing",
+  "addons",
   "portfolio",
   "support",
 ] as const;

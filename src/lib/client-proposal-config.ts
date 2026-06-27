@@ -92,6 +92,7 @@ export const clientNavSectionIds = {
   portfolio: "portfolio",
   inquiries: "inquiries",
   support: "support",
+  addons: "addons",
 } as const;
 
 export type ClientNavSectionId =

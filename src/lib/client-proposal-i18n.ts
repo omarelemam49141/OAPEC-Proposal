@@ -29,6 +29,7 @@ export const clientCopy: Record<
       portfolio: string;
       inquiries: string;
       support: string;
+      addons: string;
     };
     siteGaps: {
       title: string;
@@ -122,6 +123,7 @@ export const clientCopy: Record<
       portfolio: "Portfolio",
       inquiries: "Note",
       support: "Included",
+      addons: "Add-ons",
     },
     siteGaps: {
       title: "Why does the current site need an update?",
@@ -144,7 +146,8 @@ export const clientCopy: Record<
       optionA: {
         title: "Static bilingual website",
         includes: [
-          "Modern, fast pages in Arabic and English (RTL from day one).",
+          "Fully responsive website — desktop, tablet, and mobile browsers (RTL from day one).",
+          "Modern, fast pages in Arabic and English.",
           "Content implemented from copy OAPEC provides for each page.",
           "Search, contact form, newsletter, and social embed — as on the current site.",
           "DataBank and e-library as clear links to existing external systems.",
@@ -304,6 +307,7 @@ export const clientCopy: Record<
       portfolio: "سابقة الأعمال",
       inquiries: "ملاحظة",
       support: "المشمول",
+      addons: "إضافات",
     },
     siteGaps: {
       title: "لماذا يحتاج الموقع الحالي إلى تحديث؟",
@@ -326,7 +330,8 @@ export const clientCopy: Record<
       optionA: {
         title: "موقع ثابت ثنائي اللغة",
         includes: [
-          "صفحات حديثة وسريعة بالعربية والإنجليزية (RTL من اليوم الأول).",
+          "موقع متجاوب بالكامل — سطح مكتب، جهاز لوحي، ومتصفح الجوال (RTL من اليوم الأول).",
+          "صفحات حديثة وسريعة بالعربية والإنجليزية.",
           "تنفيذ المحتوى من النصوص التي تزودنا بها أوابك لكل صفحة.",
           "بحث، نموذج تواصل، نشرة بريدية، وتضمين اجتماعي — كما في الموقع الحالي.",
           "بنك البيانات والمكتبة الإلكترونية كروابط واضحة للأنظمة الخارجية القائمة.",
