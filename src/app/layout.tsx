@@ -15,9 +15,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AIMS Website Redesign Proposal",
+  title: "OAPEC Website Redesign Proposal",
   description:
-    "Bilingual (Arabic/English) proposal for redesigning the AIMS website using a modern Next.js + React approach.",
+    "Bilingual proposal for rebuilding oapecorg.org on Next.js — scenario-based estimates, decision matrices, and implementation options.",
 };
 
 export default function RootLayout({
@@ -35,7 +35,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `(function () {
   try {
-    var lang = localStorage.getItem("aims_lang") || "ar";
+    var lang = localStorage.getItem("oapec_lang") || localStorage.getItem("aims_lang") || "ar";
     document.documentElement.setAttribute("lang", lang === "ar" ? "ar" : "en");
     document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
   } catch (e) {}

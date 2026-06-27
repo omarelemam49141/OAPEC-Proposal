@@ -4,40 +4,49 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Globe } from "lucide-react";
 import { useLanguage } from "@/components/language/language-provider";
-import { copy, navSectionIds, type NavSectionId } from "@/lib/i18n";
+import { copy } from "@/lib/i18n";
+import { clientCopy } from "@/lib/client-proposal-i18n";
+import { clientNavSectionIds } from "@/lib/client-proposal-config";
 import { cn } from "@/lib/utils";
+
+const clientNav = [
+  "executiveSummary",
+  "identity",
+  "siteGaps",
+  "options",
+  "scenarios",
+  "timeline",
+  "pricing",
+  "portfolio",
+  "support",
+] as const;
 
 export function Navbar() {
   const { lang, setLang } = useLanguage();
-  const t = copy[lang];
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeId, setActiveId] = useState("");
 
-  const navItems: { id: NavSectionId; label: string }[] = [
-    { id: navSectionIds.executiveSummary, label: t.nav.executiveSummary },
-    { id: navSectionIds.scope, label: t.nav.scope },
-    { id: navSectionIds.options, label: t.nav.options },
-    { id: navSectionIds.decision, label: t.nav.decision },
-    { id: navSectionIds.timeline, label: t.nav.timeline },
-    { id: navSectionIds.pricing, label: t.nav.pricing },
-    { id: navSectionIds.sourceCode, label: t.nav.sourceCode },
-    { id: navSectionIds.support, label: t.nav.support },
-  ];
+  const navItems = clientNav.map((key) => ({
+    key,
+    id: clientNavSectionIds[key],
+    label: clientCopy[lang].nav[key],
+  }));
+
+  const homeId = clientNavSectionIds.executiveSummary;
+  const brandTag = clientCopy[lang].brandTag;
+  const brandName = copy[lang].brandName;
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 50);
       const mid = window.scrollY + window.innerHeight / 2;
-      const sections = document.querySelectorAll("section[id]");
-      let current = "";
-      sections.forEach((s) => {
+      document.querySelectorAll("section[id]").forEach((s) => {
         const el = s as HTMLElement;
         if (mid >= el.offsetTop && mid < el.offsetTop + el.offsetHeight) {
-          current = s.id;
+          setActiveId(s.id);
         }
       });
-      if (current) setActiveId(current);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -52,30 +61,29 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        "no-print fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 py-2"
-          : "bg-white/60 backdrop-blur-sm py-4"
+        "no-print fixed inset-x-0 top-0 z-50 transition-all duration-300 overflow-visible",
+        scrolled ? "bg-white/95 backdrop-blur-xl shadow-md py-2" : "bg-white/70 backdrop-blur-sm py-3"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => go(navSectionIds.executiveSummary)}>
-          <span className="text-2xl font-black bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
-            {t.brandName}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-2 overflow-visible">
+        <button type="button" className="flex items-center gap-2 shrink-0" onClick={() => go(homeId)}>
+          <span className="text-xl font-black bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">
+            {brandName}
           </span>
-          <span className="font-bold text-slate-500 text-sm">Sites</span>
-        </div>
+          <span className="font-bold text-slate-400 text-xs hidden sm:inline">{brandTag}</span>
+        </button>
 
-        <div className="hidden xl:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-0.5 flex-1 justify-center max-w-4xl min-w-0 overflow-x-auto scrollbar-none">
           {navItems.map((item) => (
             <button
-              key={item.id}
+              key={item.key}
+              type="button"
               onClick={() => go(item.id)}
               className={cn(
-                "relative px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-300",
+                "px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0",
                 activeId === item.id
-                  ? "text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md shadow-blue-500/20"
-                  : "text-slate-600 hover:text-blue-700 hover:bg-blue-50/80"
+                  ? "text-white bg-gradient-to-r from-emerald-700 to-teal-600"
+                  : "text-slate-600 hover:bg-emerald-50"
               )}
             >
               {item.label}
@@ -83,21 +91,21 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           <button
+            type="button"
             onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300",
-              "bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50",
-              "hover:from-blue-100 hover:to-purple-100 hover:shadow-md"
-            )}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200/60 text-emerald-800"
           >
-            <Globe size={16} className="text-blue-600" />
-            <span className="text-blue-700">{lang === "ar" ? "English" : "العربية"}</span>
+            <Globe size={14} />
+            {lang === "ar" ? "EN" : "ع"}
           </button>
-
-          <button className="xl:hidden p-2 text-slate-700 rounded-xl hover:bg-slate-100" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={26} /> : <Menu size={26} />}
+          <button
+            type="button"
+            className="lg:hidden p-2 rounded-xl hover:bg-slate-100"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
@@ -108,25 +116,21 @@ export function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="xl:hidden bg-white/95 backdrop-blur-xl border-t border-slate-100 overflow-hidden"
+            className="lg:hidden bg-white border-t border-slate-100 overflow-hidden max-h-[70vh] overflow-y-auto"
           >
-            <div className="flex flex-col p-4 gap-1">
-              {navItems.map((item, i) => (
-                <motion.button
-                  key={item.id}
-                  initial={{ opacity: 0, x: lang === "ar" ? 20 : -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+            <div className="flex flex-col p-3 gap-0.5">
+              {navItems.map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
                   onClick={() => go(item.id)}
                   className={cn(
-                    "px-4 py-3 rounded-xl font-semibold text-start transition-colors",
-                    activeId === item.id
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                      : "text-slate-600 hover:bg-slate-50"
+                    "px-4 py-2.5 rounded-xl text-sm font-semibold text-start",
+                    activeId === item.id ? "bg-emerald-700 text-white" : "text-slate-600 hover:bg-slate-50"
                   )}
                 >
                   {item.label}
-                </motion.button>
+                </button>
               ))}
             </div>
           </motion.div>

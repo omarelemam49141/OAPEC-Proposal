@@ -13,7 +13,7 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>(() => {
     if (typeof window === "undefined") return "ar";
-    const stored = localStorage.getItem("aims_lang");
+    const stored = localStorage.getItem("oapec_lang") ?? localStorage.getItem("aims_lang");
     if (stored === "en" || stored === "ar") return stored;
     return document.documentElement.lang === "en" ? "en" : "ar";
   });
@@ -21,7 +21,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     document.documentElement.lang = lang === "ar" ? "ar" : "en";
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    localStorage.setItem("aims_lang", lang);
+    localStorage.setItem("oapec_lang", lang);
   }, [lang]);
 
   const value = useMemo<LanguageContextValue>(() => ({ lang, setLang }), [lang]);
