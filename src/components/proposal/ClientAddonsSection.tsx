@@ -5,12 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Smartphone,
   CalendarDays,
-  Database,
   CheckCircle2,
   AlertTriangle,
   Package,
   Plus,
-  FileDown,
+  FileText,
   Loader2,
 } from "lucide-react";
 import { useLanguage } from "@/components/language/language-provider";
@@ -28,12 +27,11 @@ import {
   conferenceTotalPrice,
   conferenceDurationWeeks,
   type AddonSelection,
-  type CmsChoice,
 } from "@/lib/client-addons-config";
 import { clientNavSectionIds } from "@/lib/client-proposal-config";
 import { clientCopy } from "@/lib/client-proposal-i18n";
 import { cn } from "@/lib/utils";
-import { exportProposalAsPdf } from "@/lib/export-proposal-pdf";
+import { exportProposalAsDocx } from "@/lib/export-proposal-docx";
 
 function CheckboxCard({
   checked,
@@ -80,20 +78,20 @@ export function ClientAddonsSection() {
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  const handleExportPdf = useCallback(async () => {
+  const handleExportDocx = useCallback(async () => {
     setExporting(true);
     setExportError(null);
     try {
-      await exportProposalAsPdf(selection);
+      await exportProposalAsDocx(selection, lang);
     } catch (err) {
       const message =
         err instanceof Error
           ? err.message
           : lang === "ar"
-            ? "فشل إنشاء PDF. حاول مرة أخرى."
-            : "PDF export failed. Please try again.";
+            ? "فشل إنشاء Word. حاول مرة أخرى."
+            : "Word export failed. Please try again.";
       setExportError(message);
-      console.error("PDF export failed:", err);
+      console.error("Word export failed:", err);
     } finally {
       setExporting(false);
     }
@@ -113,30 +111,17 @@ export function ClientAddonsSection() {
       );
     }
     if (selection.conference) {
-      const confPrice = conferenceTotalPrice(selection.conferenceAdvanced);
-      const label =
-        lang === "ar"
-          ? `وحدة المؤتمرات (${formatUsd(confPrice)}${selection.conferenceAdvanced ? " — إضافات متقدمة" : ""})`
-          : `Conference module (${formatUsd(confPrice)}${selection.conferenceAdvanced ? " — advanced add-ons" : ""})`;
-      items.push(label);
-    }
-    if (selection.cms === "strapi") {
-      items.push(lang === "ar" ? `Strapi CMS (${formatUsd(addonPrices.cmsStrapi)})` : `Strapi CMS (${formatUsd(addonPrices.cmsStrapi)})`);
-    }
-    if (selection.cms === "custom") {
       items.push(
-        lang === "ar" ? `CMS مخصص (${formatUsd(addonPrices.cmsCustom)})` : `Custom CMS (${formatUsd(addonPrices.cmsCustom)})`
+        lang === "ar"
+          ? `وحدة المؤتمرات (${formatUsd(conferenceTotalPrice())})`
+          : `Conference module (${formatUsd(conferenceTotalPrice())})`
       );
     }
     return items;
   }, [selection, lang]);
 
-  const conferenceWeeks = conferenceDurationWeeks(selection.conferenceAdvanced);
-  const conferencePrice = conferenceTotalPrice(selection.conferenceAdvanced);
-
-  const setCms = (cms: CmsChoice) => {
-    setSelection((s) => ({ ...s, cms: s.cms === cms ? "none" : cms }));
-  };
+  const conferenceWeeks = conferenceDurationWeeks();
+  const conferencePrice = conferenceTotalPrice();
 
   return (
     <section id={clientNavSectionIds.addons} className="scroll-mt-28 py-20 bg-slate-50">
@@ -207,43 +192,25 @@ export function ClientAddonsSection() {
           </CheckboxCard>
 
           {/* Conference */}
-          <div
-            className={cn(
-              "rounded-3xl border-2 p-6 transition-all print-avoid-break",
-              selection.conference ? "border-emerald-400 bg-emerald-50/40 shadow-md" : "border-slate-200 bg-white",
-              !selection.conference && "print:hidden"
-            )}
+          <CheckboxCard
+            checked={selection.conference}
+            onChange={(conference) => setSelection((s) => ({ ...s, conference }))}
+            className={cn("print-avoid-break", !selection.conference && "print:hidden")}
           >
-            <label className="flex items-start gap-4 cursor-pointer mb-3">
-              <input
-                type="checkbox"
-                checked={selection.conference}
-                onChange={(e) =>
-                  setSelection((s) => ({
-                    ...s,
-                    conference: e.target.checked,
-                    conferenceAdvanced: e.target.checked ? s.conferenceAdvanced : false,
-                  }))
-                }
-                className="no-print mt-1 w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <CalendarDays size={20} className="text-amber-600" />
-                    <h4 className="font-bold text-slate-900">{t.conference.title}</h4>
-                  </div>
-                  <div className="text-end">
-                    <div className="font-black text-emerald-800">{formatUsd(conferencePrice)}</div>
-                    <div className="text-xs text-slate-500 font-medium">
-                      {formatWeekRange(conferenceWeeks, lang)} ({t.conference.timelineSuffix})
-                    </div>
-                  </div>
+            <div className="flex flex-wrap justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <CalendarDays size={20} className="text-amber-600" />
+                <h4 className="font-bold text-slate-900">{t.conference.title}</h4>
+              </div>
+              <div className="text-end">
+                <div className="font-black text-emerald-800">{formatUsd(conferencePrice)}</div>
+                <div className="text-xs text-slate-500 font-medium">
+                  {formatWeekRange(conferenceWeeks, lang)} ({t.conference.timelineSuffix})
                 </div>
               </div>
-            </label>
-            <p className="text-sm text-slate-600 mb-3 ps-9">{t.conference.description}</p>
-            <ul className="space-y-1.5 mb-3 ps-9">
+            </div>
+            <p className="text-sm text-slate-600 mb-3">{t.conference.description}</p>
+            <ul className="space-y-1.5 mb-3">
               {t.conference.includes.map((line, i) => (
                 <li key={i} className="flex gap-2 text-sm text-slate-600">
                   <Plus size={12} className="text-amber-500 shrink-0 mt-1" />
@@ -251,7 +218,7 @@ export function ClientAddonsSection() {
                 </li>
               ))}
             </ul>
-            <div className="flex flex-wrap gap-2 mb-3 ps-9">
+            <div className="flex flex-wrap gap-2 mb-3">
               {t.conference.breakdown.map((row) => (
                 <span
                   key={row.label}
@@ -261,138 +228,11 @@ export function ClientAddonsSection() {
                 </span>
               ))}
             </div>
-
-            {/* Advanced add-ons — nested option */}
-            <div
-              className={cn(
-                "ms-9 mb-3 rounded-2xl border-2 p-4 transition-all print-avoid-break",
-                !selection.conference && "opacity-50 pointer-events-none",
-                !selection.conferenceAdvanced && "print:hidden",
-                selection.conferenceAdvanced
-                  ? "border-amber-300 bg-amber-50/60"
-                  : "border-slate-200 bg-white"
-              )}
-            >
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selection.conferenceAdvanced}
-                  disabled={!selection.conference}
-                  onChange={(e) =>
-                    setSelection((s) => ({ ...s, conferenceAdvanced: e.target.checked }))
-                  }
-                  className="no-print mt-0.5 w-4 h-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500 shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                    <span className="font-bold text-slate-900 text-sm">{t.conference.advanced.title}</span>
-                    <span className="text-xs font-semibold text-amber-800">
-                      {t.conference.advanced.priceNote} · {t.conference.advanced.timelineNote}
-                    </span>
-                  </div>
-                  <ol className="space-y-1 list-decimal list-inside text-sm text-slate-600">
-                    {t.conference.advanced.includes.map((line, i) => (
-                      <li key={i}>{line}</li>
-                    ))}
-                  </ol>
-                </div>
-              </label>
-            </div>
-
-            <p className="text-xs font-semibold text-amber-900 bg-amber-50 border-2 border-amber-200 rounded-xl px-3 py-2.5 flex gap-2 leading-relaxed ms-9">
+            <p className="text-xs font-semibold text-amber-900 bg-amber-50 border-2 border-amber-200 rounded-xl px-3 py-2.5 flex gap-2 leading-relaxed">
               <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-600" />
               {t.conference.disclaimer}
             </p>
-          </div>
-        </div>
-
-        {/* CMS */}
-        <div className={cn("mb-8", selection.cms === "none" && "print:hidden")}>
-          <div className="flex items-center gap-2 mb-4">
-            <Database size={22} className="text-purple-600" />
-            <h3 className="font-bold text-lg text-slate-900">{t.cms.title}</h3>
-          </div>
-          <p className="text-sm text-slate-600 mb-4 no-print">{t.cms.subtitle}</p>
-
-          <div className="grid md:grid-cols-2 gap-4 mb-6 no-print">
-            <button
-              type="button"
-              onClick={() => setCms("strapi")}
-              className={cn(
-                "text-start rounded-2xl border-2 p-5 transition-all",
-                selection.cms === "strapi"
-                  ? "border-purple-400 bg-purple-50 shadow-md"
-                  : "border-slate-200 bg-white hover:border-slate-300"
-              )}
-            >
-              <div className="font-bold text-slate-900 mb-1">{t.cms.strapiTitle}</div>
-              <div className="text-xs text-slate-500">{t.cms.strapiTimeline}</div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setCms("custom")}
-              className={cn(
-                "text-start rounded-2xl border-2 p-5 transition-all",
-                selection.cms === "custom"
-                  ? "border-purple-400 bg-purple-50 shadow-md"
-                  : "border-slate-200 bg-white hover:border-slate-300"
-              )}
-            >
-              <div className="font-bold text-slate-900 mb-1">{t.cms.customTitle}</div>
-              <div className="text-xs text-slate-500">{t.cms.customTimeline}</div>
-            </button>
-          </div>
-
-          <p className="text-sm text-purple-800 bg-purple-50 border border-purple-200/60 rounded-xl px-4 py-3 mb-6 no-print">
-            {t.cms.phaseNote}
-          </p>
-
-          <div className="hidden print:block print-avoid-break mb-6 rounded-2xl border border-purple-200 bg-purple-50/50 p-5">
-            <p className="font-bold text-slate-900 mb-1">
-              {selection.cms === "strapi" ? t.cms.strapiTitle : t.cms.customTitle}
-            </p>
-            <p className="text-sm text-slate-600">
-              {selection.cms === "strapi" ? t.cms.strapiTimeline : t.cms.customTimeline}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-x-auto no-print">
-            <h4 className="font-bold text-slate-900 px-6 py-4 border-b border-slate-100 bg-purple-50/50">
-              {t.cms.comparisonTitle}
-            </h4>
-            <table className="w-full text-sm min-w-[640px]">
-              <thead>
-                <tr className="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
-                  <th className="p-4 text-start">{t.cms.columns.factor}</th>
-                  <th className="p-4 text-start">{t.cms.columns.strapi}</th>
-                  <th className="p-4 text-start">{t.cms.columns.custom}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {t.cms.rows.map((row, i) => (
-                  <tr key={i} className={cn("border-b border-slate-50", i % 2 === 0 ? "bg-white" : "bg-slate-50/40")}>
-                    <td className="p-4 font-semibold text-slate-700">{row.factor}</td>
-                    <td
-                      className={cn(
-                        "p-4 text-slate-600",
-                        selection.cms === "strapi" && "bg-purple-50/60 font-medium text-purple-900"
-                      )}
-                    >
-                      {row.strapi}
-                    </td>
-                    <td
-                      className={cn(
-                        "p-4 text-slate-600",
-                        selection.cms === "custom" && "bg-purple-50/60 font-medium text-purple-900"
-                      )}
-                    >
-                      {row.custom}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          </CheckboxCard>
         </div>
 
         {/* Summary */}
@@ -463,14 +303,14 @@ export function ClientAddonsSection() {
         <div className="mt-8 text-center">
           <button
             type="button"
-            onClick={handleExportPdf}
+            onClick={handleExportDocx}
             disabled={exporting}
-            className="inline-flex items-center justify-center gap-2.5 w-full sm:w-auto min-w-[280px] px-8 py-4 text-lg font-bold bg-gradient-to-r from-emerald-700 to-teal-600 text-white rounded-2xl shadow-xl shadow-emerald-600/20 hover:from-emerald-800 hover:to-teal-700 transition-colors disabled:opacity-70 disabled:cursor-wait"
+            className="inline-flex items-center justify-center gap-2.5 w-full sm:w-auto min-w-[260px] px-8 py-4 text-lg font-bold bg-gradient-to-r from-emerald-700 to-teal-600 text-white rounded-2xl shadow-xl shadow-emerald-600/20 hover:from-emerald-800 hover:to-teal-700 transition-colors disabled:opacity-70 disabled:cursor-wait"
           >
-            {exporting ? <Loader2 size={22} className="animate-spin" /> : <FileDown size={22} />}
-            {exporting ? t.summary.exportPdfLoading : t.summary.exportPdf}
+            {exporting ? <Loader2 size={22} className="animate-spin" /> : <FileText size={22} />}
+            {exporting ? t.summary.exportDocxLoading : t.summary.exportDocx}
           </button>
-          <p className="mt-3 text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">{t.summary.exportPdfHint}</p>
+          <p className="mt-3 text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">{t.summary.exportDocxHint}</p>
           {exportError && (
             <p className="mt-3 text-sm text-red-600 font-medium max-w-lg mx-auto leading-relaxed" role="alert">
               {exportError}

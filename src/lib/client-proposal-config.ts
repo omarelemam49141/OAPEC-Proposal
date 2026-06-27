@@ -5,8 +5,8 @@
 
 import { HOURS_PER_WEEK } from "./proposal-estimates";
 
-/** Fixed total shown to client (design + development combined) */
-export const CLIENT_FIXED_TOTAL = 3000;
+/** Fixed total: website + custom CMS (merged base package) */
+export const CLIENT_FIXED_TOTAL = 8700;
 
 /** UI/UX phase — fixed calendar duration */
 export const UX_WEEKS = 2;
@@ -17,6 +17,10 @@ export const DEV_TEAM_SIZE = 2;
 /** Development phase — fixed calendar duration (2 developers) */
 export const DEV_WEEKS_MIN = 4;
 export const DEV_WEEKS_MAX = 5;
+
+/** Custom CMS build — merged into base package timeline */
+export const CMS_WEEKS_MIN = 5;
+export const CMS_WEEKS_MAX = 6;
 
 export const clientChoices = {
   ia: "consolidated" as const,
@@ -56,8 +60,8 @@ function distributeDevWeeks(totalWeeks: number): string[] {
   return allocated.map(String);
 }
 
-const weeksMin = UX_WEEKS + DEV_WEEKS_MIN;
-const weeksMax = UX_WEEKS + DEV_WEEKS_MAX;
+const weeksMin = UX_WEEKS + DEV_WEEKS_MIN + CMS_WEEKS_MIN;
+const weeksMax = UX_WEEKS + DEV_WEEKS_MAX + CMS_WEEKS_MAX;
 
 const devWeeksForMilestones = Math.round((DEV_WEEKS_MIN + DEV_WEEKS_MAX) / 2);
 const devMilestoneWeeks = distributeDevWeeks(devWeeksForMilestones);
@@ -67,6 +71,7 @@ export const clientEstimate = {
   uxHours,
   uxWeeks: UX_WEEKS,
   devWeeks: { min: DEV_WEEKS_MIN, max: DEV_WEEKS_MAX },
+  cmsWeeks: { min: CMS_WEEKS_MIN, max: CMS_WEEKS_MAX },
   devTeamSize: DEV_TEAM_SIZE,
   totalCost: CLIENT_FIXED_TOTAL,
   totalCostFormatted: `$${CLIENT_FIXED_TOTAL.toLocaleString("en-US")}`,

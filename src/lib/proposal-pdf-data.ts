@@ -43,6 +43,7 @@ export type ProposalPdfData = {
   scheduleTitle: string;
   scopeTitle: string;
   milestonesTitle: string;
+  milestonesSubtitle: string;
   includedSectionTitle: string;
   footerNote: string;
   disclaimer?: string;
@@ -84,50 +85,13 @@ export function buildProposalPdfData(selection: AddonSelection, lang: Lang): Pro
   }
 
   if (selection.conference) {
-    const confWeeks = conferenceDurationWeeks(selection.conferenceAdvanced);
-    const features = [...addons.conference.includes];
-    if (selection.conferenceAdvanced) {
-      features.push(
-        `${addons.conference.advanced.title}: ${addons.conference.advanced.includes.join(", ")}`
-      );
-    }
     scopeItems.push({
       id: "conference",
       title: addons.conference.title,
-      price: formatUsd(conferenceTotalPrice(selection.conferenceAdvanced)),
-      duration: formatWeekRange(confWeeks, lang),
-      features,
+      price: formatUsd(conferenceTotalPrice()),
+      duration: formatWeekRange(conferenceDurationWeeks(), lang),
+      features: addons.conference.includes,
       note: addons.conference.disclaimer,
-    });
-  }
-
-  if (selection.cms === "strapi") {
-    scopeItems.push({
-      id: "cms-strapi",
-      title: addons.cms.strapiTitle,
-      price: formatUsd(addonPrices.cmsStrapi),
-      duration: addons.cms.strapiTimeline,
-      features: [
-        lang === "ar"
-          ? "تحرير ذاتي للمحتوى عبر Strapi — مشترك للموقع والتطبيق"
-          : "Self-service content editing via Strapi — shared for web and mobile",
-        lang === "ar" ? "المرحلة 2 — بعد الإطلاق الثابت" : "Phase 2 — after static go-live",
-      ],
-    });
-  }
-
-  if (selection.cms === "custom") {
-    scopeItems.push({
-      id: "cms-custom",
-      title: addons.cms.customTitle,
-      price: formatUsd(addonPrices.cmsCustom),
-      duration: addons.cms.customTimeline,
-      features: [
-        lang === "ar"
-          ? "CMS مخصص بالكامل — ملكية أوابك، بدون اعتماد على طرف ثالث"
-          : "Fully custom CMS — OAPEC-owned, no third-party dependency",
-        lang === "ar" ? "المرحلة 2 — بعد الإطلاق الثابت" : "Phase 2 — after static go-live",
-      ],
     });
   }
 
@@ -159,7 +123,7 @@ export function buildProposalPdfData(selection: AddonSelection, lang: Lang): Pro
       day: "numeric",
     }),
     title: client.heroTitle,
-    subtitle: client.proposalSubtitle,
+    subtitle: addons.subtitle,
     totalCost: formatUsd(total),
     totalDuration: formatWeekRange(duration, lang),
     scopeItems,
@@ -174,10 +138,14 @@ export function buildProposalPdfData(selection: AddonSelection, lang: Lang): Pro
     supportDetails: client.included.supportDetails.slice(0, 3),
     sourceCodeTitle: client.included.sourceCodeTitle,
     sourceCodeDetails: client.included.sourceCodeDetails,
-    investmentTitle: client.pricing.title,
+    investmentTitle: addons.summary.title,
     scheduleTitle: addons.summary.timelinesTitle,
     scopeTitle: lang === "ar" ? "نطاق المشروع والميزات" : "Project scope & features",
     milestonesTitle: client.timeline.title,
+    milestonesSubtitle:
+      lang === "ar"
+        ? "الباقة الأساسية (الموقع + CMS مخصص) — مراحل التسليم"
+        : "Base package (website + custom CMS) — delivery phases",
     includedSectionTitle: client.support.title,
     footerNote: client.footerNote,
     disclaimer: selection.conference ? addons.conference.disclaimer : undefined,
@@ -202,16 +170,7 @@ export function buildInvestmentRows(selection: AddonSelection, lang: Lang) {
   if (selection.conference) {
     rows.push({
       label: addonsCopy[lang].conference.title,
-      price: formatUsd(conferenceTotalPrice(selection.conferenceAdvanced)),
-    });
-  }
-  if (selection.cms === "strapi") {
-    rows.push({ label: "Strapi CMS", price: formatUsd(addonPrices.cmsStrapi) });
-  }
-  if (selection.cms === "custom") {
-    rows.push({
-      label: lang === "ar" ? "CMS مخصص" : "Custom CMS",
-      price: formatUsd(addonPrices.cmsCustom),
+      price: formatUsd(conferenceTotalPrice()),
     });
   }
   return rows;

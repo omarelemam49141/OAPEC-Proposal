@@ -565,7 +565,7 @@ export function ProposalPdfDocument({ selection, lang }: Props) {
           {data.milestonesTitle}
         </PdfText>
         <PdfText lang={lang} style={{ fontSize: 9, color: colors.slateLight, marginBottom: 10 }}>
-          {lang === "ar" ? "الموقع الأساسي — مراحل التسليم" : "Base website — delivery phases"}
+          {data.milestonesSubtitle}
         </PdfText>
         {data.milestones.map((m, i) => (
           <View

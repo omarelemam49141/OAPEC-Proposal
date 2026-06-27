@@ -141,7 +141,7 @@ export const clientCopy: Record<
     options: {
       title: "Our recommended approach",
       description:
-        "We propose a high-performance static website with bilingual support. A content management system remains available as a future upgrade if OAPEC needs self-service editing later.",
+        "We propose a high-performance bilingual website with a custom CMS included — so OAPEC can update content in-house after launch.",
       selectedLabel: "Selected for this proposal",
       optionA: {
         title: "Static bilingual website",
@@ -170,10 +170,10 @@ export const clientCopy: Record<
     },
     scenario: {
       title: "Project estimate",
-      subtitle: "Consolidated IA · static site · client content · 2 developers on implementation",
+      subtitle: "Consolidated IA · bilingual website · custom CMS · client content · 2 developers on implementation",
       name: "Recommended scope",
       ia: "Consolidated hubs (streamlined navigation)",
-      cms: "Static pages (no CMS in base scope)",
+      cms: "Custom CMS (OAPEC-owned, included)",
       content: "OAPEC provides copy per page; we implement during build",
       integrations: "Site search, contact form, newsletter, social embed",
       weeks: clientTimelineWeeks.labelEn,
@@ -221,14 +221,14 @@ export const clientCopy: Record<
       subtitle: "Fixed estimate for the scope described in this proposal",
       rows: [
         {
-          label: `UI/UX design + website development (${clientTimelineWeeks.labelEn}, bilingual, ${DEV_TEAM_SIZE} developers, AI-assisted)`,
+          label: `UI/UX design + website + custom CMS (${clientTimelineWeeks.labelEn}, bilingual, ${DEV_TEAM_SIZE} developers, AI-assisted)`,
           value: clientEstimate.totalCostFormatted,
         },
       ],
       totalLabel: "Total project investment",
       totalValue: clientEstimate.totalCostFormatted,
       cmsNote:
-        "Content management system (Strapi) is an optional future upgrade — priced separately on request.",
+        "Custom CMS is included in the base package — OAPEC-owned, with self-service content editing after launch.",
     },
     ai: {
       title: "AI-assisted delivery",
@@ -325,7 +325,7 @@ export const clientCopy: Record<
     options: {
       title: "منهجيتنا المقترحة",
       description:
-        "نقترح موقعاً ثابتاً عالي الأداء بدعم ثنائي اللغة. نظام إدارة المحتوى (CMS) يبقى متاحاً كترقية مستقبلية إذا احتاجت أوابك التحرير الذاتي لاحقاً.",
+        "نقترح موقعاً ثنائي اللغة عالي الأداء مع CMS مخصص مشمول — ليتمكن فريق أوابك من تحديث المحتوى ذاتياً بعد الإطلاق.",
       selectedLabel: "المختار في هذا الاقتراح",
       optionA: {
         title: "موقع ثابت ثنائي اللغة",
@@ -353,10 +353,10 @@ export const clientCopy: Record<
     },
     scenario: {
       title: "تقدير المشروع",
-      subtitle: "هيكلة موحّدة · موقع ثابت · محتوى من أوابك · مطوران في التنفيذ",
+      subtitle: "هيكلة موحّدة · موقع ثنائي اللغة · CMS مخصص · محتوى من أوابك · مطوران في التنفيذ",
       name: "النطاق المقترح",
       ia: "مراكز موحّدة (تنقل مبسّط)",
-      cms: "صفحات ثابتة (بدون CMS في النطاق الأساسي)",
+      cms: "CMS مخصص (ملكية أوابك، مشمول)",
       content: "أوابك تزودنا بنصوص كل صفحة؛ ننفّذها أثناء البناء",
       integrations: "بحث الموقع، نموذج تواصل، نشرة بريدية، تضمين اجتماعي",
       weeks: clientTimelineWeeks.labelAr,
@@ -404,14 +404,13 @@ export const clientCopy: Record<
       subtitle: "تقدير ثابت للنطاق الموضح في هذا الاقتراح",
       rows: [
         {
-          label: `تصميم UI/UX + تطوير الموقع (${clientTimelineWeeks.labelAr}، ثنائي اللغة، ${DEV_TEAM_SIZE} مطورين، بمساعدة الذكاء الاصطناعي)`,
+          label: `تصميم UI/UX + موقع + CMS مخصص (${clientTimelineWeeks.labelAr}، ثنائي اللغة، ${DEV_TEAM_SIZE} مطورين، بمساعدة الذكاء الاصطناعي)`,
           value: clientEstimate.totalCostFormatted,
         },
       ],
       totalLabel: "إجمالي استثمار المشروع",
       totalValue: clientEstimate.totalCostFormatted,
-      cmsNote:
-        "نظام إدارة المحتوى (Strapi) ترقية مستقبلية اختيارية — يُسعّر بشكل منفصل عند الطلب.",
+      cmsNote: "CMS مخصص مشمول في الباقة الأساسية — ملكية أوابك، مع تحرير ذاتي للمحتوى بعد الإطلاق.",
     },
     ai: {
       title: "تسليم بمساعدة الذكاء الاصطناعي",
