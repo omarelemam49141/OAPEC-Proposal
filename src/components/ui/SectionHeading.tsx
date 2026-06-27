@@ -1,11 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface SectionHeadingProps {
   badge: string;
   title: string;
   subtitle?: string;
+  subtitleClassName?: string;
   badgeColor?: "blue" | "purple" | "green" | "amber";
 }
 
@@ -16,7 +18,7 @@ const colorMap = {
   amber: "text-amber-600 bg-amber-50 border-amber-200/60",
 };
 
-export function SectionHeading({ badge, title, subtitle, badgeColor = "blue" }: SectionHeadingProps) {
+export function SectionHeading({ badge, title, subtitle, subtitleClassName, badgeColor = "blue" }: SectionHeadingProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -32,7 +34,7 @@ export function SectionHeading({ badge, title, subtitle, badgeColor = "blue" }: 
         {title}
       </h2>
       {subtitle && (
-        <p className="text-slate-500 max-w-3xl mx-auto text-lg leading-relaxed">
+        <p className={cn("text-slate-500 max-w-3xl mx-auto text-lg leading-relaxed", subtitleClassName)}>
           {subtitle}
         </p>
       )}

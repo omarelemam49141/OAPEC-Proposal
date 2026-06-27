@@ -2,7 +2,6 @@
 
 import { LanguageProvider } from "@/components/language/language-provider";
 import { Navbar } from "@/components/layout/Navbar";
-import { ClientViewBanner } from "@/components/proposal/ClientProposalToggle";
 import {
   ClientHeroSection,
   ClientIdentitySection,
@@ -21,10 +20,9 @@ import { ClientAddonsSection } from "@/components/proposal/ClientAddonsSection";
 export default function ProposalPage() {
   return (
     <LanguageProvider>
-      <div className="min-h-full bg-background text-foreground">
+      <div id="proposal-print-root" className="min-h-full bg-background text-foreground">
         <Navbar />
-        <ClientViewBanner />
-        <main className="pt-28">
+        <main className="pt-24">
           <ClientHeroSection />
           <ClientIdentitySection />
           <SiteGapsSection />

@@ -58,6 +58,9 @@ export const addonsCopy: Record<
       timelinesTitle: string;
       selectedLabel: string;
       noneSelected: string;
+      exportPdf: string;
+      exportPdfLoading: string;
+      exportPdfHint: string;
     };
   }
 > = {
@@ -171,6 +174,10 @@ export const addonsCopy: Record<
       timelinesTitle: "Delivery schedules",
       selectedLabel: "Selected add-ons",
       noneSelected: "Base package only",
+      exportPdf: "Download proposal PDF (English)",
+      exportPdfLoading: "Generating PDF…",
+      exportPdfHint:
+        "Downloads an English PDF with your selected scope, timeline, and investment totals.",
     },
   },
 
@@ -283,6 +290,10 @@ export const addonsCopy: Record<
       timelinesTitle: "جداول التسليم",
       selectedLabel: "الإضافات المختارة",
       noneSelected: "الباقة الأساسية فقط",
+      exportPdf: "تحميل PDF (English)",
+      exportPdfLoading: "جاري إنشاء PDF…",
+      exportPdfHint:
+        "يُحمّل ملف PDF باللغة الإنجليزية يتضمن النطاق المختار والجدول الزمني وإجمالي الاستثمار.",
     },
   },
 };

@@ -3,6 +3,7 @@
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant print (@media print);
 
 @theme inline {
   --color-background: var(--background);
@@ -150,20 +151,104 @@
     display: none !important;
   }
 
-  /* PDF output should be clean and consistent */
-  body {
-    background: #ffffff !important;
-    color: #111827 !important; /* slate-900 */
+  html.is-printing *,
+  html.is-printing *::before,
+  html.is-printing *::after {
+    animation: none !important;
+    transition: none !important;
   }
 
-  /* Remove blur/transparency for predictable PDF output */
-  .bg-white\/70 {
-    background-color: #ffffff !important;
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  main {
+    padding-top: 0 !important;
+  }
+
+  section.scroll-mt-28 {
+    scroll-margin-top: 0 !important;
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+
+  section {
+    overflow: visible !important;
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  section.min-h-\[85vh\] {
+    min-height: auto !important;
+  }
+
+  .print-avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .overflow-hidden,
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  td,
+  th {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .shadow-xl,
+  .shadow-lg,
+  .shadow-md,
+  .shadow-sm {
+    box-shadow: none !important;
   }
 
   .backdrop-blur-md,
-  .backdrop-blur-sm {
+  .backdrop-blur-sm,
+  .backdrop-blur-xl {
     backdrop-filter: none !important;
+  }
+
+  .bg-white\/70,
+  .bg-white\/95 {
+    background-color: #ffffff !important;
+  }
+
+  input[type="checkbox"] {
+    display: none !important;
+  }
+
+  a[href^="http"]::after {
+    content: none !important;
   }
 
   a {
@@ -171,7 +256,11 @@
     text-decoration: none !important;
   }
 
-  @page {
-    margin: 12mm;
+  /* Keep dark summary readable in PDF */
+  .proposal-summary-print {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }

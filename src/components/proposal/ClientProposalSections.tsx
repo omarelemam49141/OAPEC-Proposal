@@ -93,7 +93,7 @@ export function ClientHeroSection() {
             {t.proposalSubtitle}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="no-print flex flex-col sm:flex-row gap-4 justify-center items-center">
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
@@ -117,7 +117,7 @@ export function ClientHeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            className="mt-14 flex justify-center text-slate-400"
+            className="no-print mt-14 flex justify-center text-slate-400"
           >
             <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
               <ArrowDown size={28} />

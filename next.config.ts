@@ -20,6 +20,18 @@ const nextConfig: NextConfig = {
   },
   turbopack: {
     root: projectRoot,
+    resolveAlias: {
+      "@react-pdf/renderer": "@react-pdf/renderer/lib/react-pdf.browser.js",
+    },
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "@react-pdf/renderer": "@react-pdf/renderer/lib/react-pdf.browser.js",
+      };
+    }
+    return config;
   },
   experimental: {
     turbopackFileSystemCacheForDev: false,

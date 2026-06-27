@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Smartphone,
@@ -10,6 +10,8 @@ import {
   AlertTriangle,
   Package,
   Plus,
+  FileDown,
+  Loader2,
 } from "lucide-react";
 import { useLanguage } from "@/components/language/language-provider";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -31,6 +33,7 @@ import {
 import { clientNavSectionIds } from "@/lib/client-proposal-config";
 import { clientCopy } from "@/lib/client-proposal-i18n";
 import { cn } from "@/lib/utils";
+import { exportProposalAsPdf } from "@/lib/export-proposal-pdf";
 
 function CheckboxCard({
   checked,
@@ -60,7 +63,7 @@ function CheckboxCard({
           checked={checked}
           disabled={disabled}
           onChange={(e) => onChange(e.target.checked)}
-          className="mt-1 w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
+          className="no-print mt-1 w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
         />
         <div className="flex-1 min-w-0">{children}</div>
       </div>
@@ -74,6 +77,27 @@ export function ClientAddonsSection() {
   const nav = clientCopy[lang].nav;
 
   const [selection, setSelection] = useState<AddonSelection>(defaultAddonSelection);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  const handleExportPdf = useCallback(async () => {
+    setExporting(true);
+    setExportError(null);
+    try {
+      await exportProposalAsPdf(selection);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : lang === "ar"
+            ? "فشل إنشاء PDF. حاول مرة أخرى."
+            : "PDF export failed. Please try again.";
+      setExportError(message);
+      console.error("PDF export failed:", err);
+    } finally {
+      setExporting(false);
+    }
+  }, [selection, lang]);
 
   const total = useMemo(() => computeAddonTotal(selection), [selection]);
   const totalDuration = useMemo(() => computeTotalDuration(selection), [selection]);
@@ -117,10 +141,10 @@ export function ClientAddonsSection() {
   return (
     <section id={clientNavSectionIds.addons} className="scroll-mt-28 py-20 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <SectionHeading badge={nav.addons} title={t.title} subtitle={t.subtitle} badgeColor="purple" />
+        <SectionHeading badge={nav.addons} title={t.title} subtitle={t.subtitle} subtitleClassName="no-print" badgeColor="purple" />
 
         {/* Base package */}
-        <GlassCard className="mb-6 !p-6 border-emerald-200/80 bg-emerald-50/30">
+        <GlassCard className="mb-6 !p-6 border-emerald-200/80 bg-emerald-50/30 print-avoid-break">
           <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
@@ -153,6 +177,7 @@ export function ClientAddonsSection() {
           <CheckboxCard
             checked={selection.mobile}
             onChange={(mobile) => setSelection((s) => ({ ...s, mobile }))}
+            className={cn("print-avoid-break", !selection.mobile && "print:hidden")}
           >
             <div className="flex flex-wrap justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
@@ -184,8 +209,9 @@ export function ClientAddonsSection() {
           {/* Conference */}
           <div
             className={cn(
-              "rounded-3xl border-2 p-6 transition-all",
-              selection.conference ? "border-emerald-400 bg-emerald-50/40 shadow-md" : "border-slate-200 bg-white"
+              "rounded-3xl border-2 p-6 transition-all print-avoid-break",
+              selection.conference ? "border-emerald-400 bg-emerald-50/40 shadow-md" : "border-slate-200 bg-white",
+              !selection.conference && "print:hidden"
             )}
           >
             <label className="flex items-start gap-4 cursor-pointer mb-3">
@@ -199,7 +225,7 @@ export function ClientAddonsSection() {
                     conferenceAdvanced: e.target.checked ? s.conferenceAdvanced : false,
                   }))
                 }
-                className="mt-1 w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
+                className="no-print mt-1 w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
               />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap justify-between gap-2">
@@ -239,8 +265,9 @@ export function ClientAddonsSection() {
             {/* Advanced add-ons — nested option */}
             <div
               className={cn(
-                "ms-9 mb-3 rounded-2xl border-2 p-4 transition-all",
+                "ms-9 mb-3 rounded-2xl border-2 p-4 transition-all print-avoid-break",
                 !selection.conference && "opacity-50 pointer-events-none",
+                !selection.conferenceAdvanced && "print:hidden",
                 selection.conferenceAdvanced
                   ? "border-amber-300 bg-amber-50/60"
                   : "border-slate-200 bg-white"
@@ -254,7 +281,7 @@ export function ClientAddonsSection() {
                   onChange={(e) =>
                     setSelection((s) => ({ ...s, conferenceAdvanced: e.target.checked }))
                   }
-                  className="mt-0.5 w-4 h-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500 shrink-0"
+                  className="no-print mt-0.5 w-4 h-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
@@ -280,14 +307,14 @@ export function ClientAddonsSection() {
         </div>
 
         {/* CMS */}
-        <div className="mb-8">
+        <div className={cn("mb-8", selection.cms === "none" && "print:hidden")}>
           <div className="flex items-center gap-2 mb-4">
             <Database size={22} className="text-purple-600" />
             <h3 className="font-bold text-lg text-slate-900">{t.cms.title}</h3>
           </div>
-          <p className="text-sm text-slate-600 mb-4">{t.cms.subtitle}</p>
+          <p className="text-sm text-slate-600 mb-4 no-print">{t.cms.subtitle}</p>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
+          <div className="grid md:grid-cols-2 gap-4 mb-6 no-print">
             <button
               type="button"
               onClick={() => setCms("strapi")}
@@ -316,11 +343,20 @@ export function ClientAddonsSection() {
             </button>
           </div>
 
-          <p className="text-sm text-purple-800 bg-purple-50 border border-purple-200/60 rounded-xl px-4 py-3 mb-6">
+          <p className="text-sm text-purple-800 bg-purple-50 border border-purple-200/60 rounded-xl px-4 py-3 mb-6 no-print">
             {t.cms.phaseNote}
           </p>
 
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-x-auto">
+          <div className="hidden print:block print-avoid-break mb-6 rounded-2xl border border-purple-200 bg-purple-50/50 p-5">
+            <p className="font-bold text-slate-900 mb-1">
+              {selection.cms === "strapi" ? t.cms.strapiTitle : t.cms.customTitle}
+            </p>
+            <p className="text-sm text-slate-600">
+              {selection.cms === "strapi" ? t.cms.strapiTimeline : t.cms.customTimeline}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-x-auto no-print">
             <h4 className="font-bold text-slate-900 px-6 py-4 border-b border-slate-100 bg-purple-50/50">
               {t.cms.comparisonTitle}
             </h4>
@@ -362,7 +398,7 @@ export function ClientAddonsSection() {
         {/* Summary */}
         <motion.div
           layout
-          className="bg-gradient-to-br from-slate-900 to-emerald-950 text-white rounded-3xl p-8 shadow-xl"
+          className="proposal-summary-print bg-gradient-to-br from-slate-900 to-emerald-950 text-white rounded-3xl p-8 shadow-xl print-avoid-break"
         >
           <h3 className="text-xl font-black mb-6">{t.summary.title}</h3>
           <div className="grid md:grid-cols-2 gap-8">
@@ -423,6 +459,24 @@ export function ClientAddonsSection() {
             </div>
           </div>
         </motion.div>
+
+        <div className="mt-8 text-center">
+          <button
+            type="button"
+            onClick={handleExportPdf}
+            disabled={exporting}
+            className="inline-flex items-center justify-center gap-2.5 w-full sm:w-auto min-w-[280px] px-8 py-4 text-lg font-bold bg-gradient-to-r from-emerald-700 to-teal-600 text-white rounded-2xl shadow-xl shadow-emerald-600/20 hover:from-emerald-800 hover:to-teal-700 transition-colors disabled:opacity-70 disabled:cursor-wait"
+          >
+            {exporting ? <Loader2 size={22} className="animate-spin" /> : <FileDown size={22} />}
+            {exporting ? t.summary.exportPdfLoading : t.summary.exportPdf}
+          </button>
+          <p className="mt-3 text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">{t.summary.exportPdfHint}</p>
+          {exportError && (
+            <p className="mt-3 text-sm text-red-600 font-medium max-w-lg mx-auto leading-relaxed" role="alert">
+              {exportError}
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );
