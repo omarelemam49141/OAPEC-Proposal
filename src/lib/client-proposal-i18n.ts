@@ -3,7 +3,6 @@ import {
   clientEstimate,
   clientTimelineWeeks,
   clientMilestoneWeeks,
-  DEV_TEAM_SIZE,
 } from "./client-proposal-config";
 
 export const clientCopy: Record<
@@ -221,7 +220,7 @@ export const clientCopy: Record<
       subtitle: "Fixed estimate for the scope described in this proposal",
       rows: [
         {
-          label: `UI/UX design + website + custom CMS (${clientTimelineWeeks.labelEn}, bilingual, ${DEV_TEAM_SIZE} developers, AI-assisted)`,
+          label: `UI/UX design + website + custom CMS (${clientTimelineWeeks.labelEn}, bilingual, AI-assisted)`,
           value: clientEstimate.totalCostFormatted,
         },
       ],
@@ -404,7 +403,7 @@ export const clientCopy: Record<
       subtitle: "تقدير ثابت للنطاق الموضح في هذا الاقتراح",
       rows: [
         {
-          label: `تصميم UI/UX + موقع + CMS مخصص (${clientTimelineWeeks.labelAr}، ثنائي اللغة، ${DEV_TEAM_SIZE} مطورين، بمساعدة الذكاء الاصطناعي)`,
+          label: `تصميم UI/UX + موقع + CMS مخصص (${clientTimelineWeeks.labelAr}، ثنائي اللغة، بمساعدة الذكاء الاصطناعي)`,
           value: clientEstimate.totalCostFormatted,
         },
       ],

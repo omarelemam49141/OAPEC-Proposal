@@ -6,12 +6,8 @@ import {
   ClientHeroSection,
   ClientIdentitySection,
   SiteGapsSection,
-  ClientOptionsSection,
-  ClientScenarioSection,
-  ClientTimelineSection,
   ClientPricingSection,
   ClientPortfolioSection,
-  ClientInquiriesSection,
   ClientSupportSection,
   ClientFooterSection,
 } from "@/components/proposal/ClientProposalSections";
@@ -26,13 +22,9 @@ export default function ProposalPage() {
           <ClientHeroSection />
           <ClientIdentitySection />
           <SiteGapsSection />
-          <ClientOptionsSection />
-          <ClientScenarioSection />
-          <ClientTimelineSection />
           <ClientPricingSection />
           <ClientAddonsSection />
           <ClientPortfolioSection />
-          <ClientInquiriesSection />
           <ClientSupportSection />
         </main>
         <ClientFooterSection />
