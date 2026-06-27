@@ -23,6 +23,8 @@ import {
   formatWeekRange,
   computeAddonTimelines,
   formatUsd,
+  conferenceTotalPrice,
+  conferenceDurationWeeks,
   type AddonSelection,
   type CmsChoice,
 } from "@/lib/client-addons-config";
@@ -87,11 +89,12 @@ export function ClientAddonsSection() {
       );
     }
     if (selection.conference) {
-      items.push(
+      const confPrice = conferenceTotalPrice(selection.conferenceAdvanced);
+      const label =
         lang === "ar"
-          ? `وحدة المؤتمرات (${formatUsd(addonPrices.conference)})`
-          : `Conference module (${formatUsd(addonPrices.conference)})`
-      );
+          ? `وحدة المؤتمرات (${formatUsd(confPrice)}${selection.conferenceAdvanced ? " — إضافات متقدمة" : ""})`
+          : `Conference module (${formatUsd(confPrice)}${selection.conferenceAdvanced ? " — advanced add-ons" : ""})`;
+      items.push(label);
     }
     if (selection.cms === "strapi") {
       items.push(lang === "ar" ? `Strapi CMS (${formatUsd(addonPrices.cmsStrapi)})` : `Strapi CMS (${formatUsd(addonPrices.cmsStrapi)})`);
@@ -103,6 +106,9 @@ export function ClientAddonsSection() {
     }
     return items;
   }, [selection, lang]);
+
+  const conferenceWeeks = conferenceDurationWeeks(selection.conferenceAdvanced);
+  const conferencePrice = conferenceTotalPrice(selection.conferenceAdvanced);
 
   const setCms = (cms: CmsChoice) => {
     setSelection((s) => ({ ...s, cms: s.cms === cms ? "none" : cms }));
@@ -176,22 +182,42 @@ export function ClientAddonsSection() {
           </CheckboxCard>
 
           {/* Conference */}
-          <CheckboxCard
-            checked={selection.conference}
-            onChange={(conference) => setSelection((s) => ({ ...s, conference }))}
+          <div
+            className={cn(
+              "rounded-3xl border-2 p-6 transition-all",
+              selection.conference ? "border-emerald-400 bg-emerald-50/40 shadow-md" : "border-slate-200 bg-white"
+            )}
           >
-            <div className="flex flex-wrap justify-between gap-2 mb-3">
-              <div className="flex items-center gap-2">
-                <CalendarDays size={20} className="text-amber-600" />
-                <h4 className="font-bold text-slate-900">{t.conference.title}</h4>
+            <label className="flex items-start gap-4 cursor-pointer mb-3">
+              <input
+                type="checkbox"
+                checked={selection.conference}
+                onChange={(e) =>
+                  setSelection((s) => ({
+                    ...s,
+                    conference: e.target.checked,
+                    conferenceAdvanced: e.target.checked ? s.conferenceAdvanced : false,
+                  }))
+                }
+                className="mt-1 w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <CalendarDays size={20} className="text-amber-600" />
+                    <h4 className="font-bold text-slate-900">{t.conference.title}</h4>
+                  </div>
+                  <div className="text-end">
+                    <div className="font-black text-emerald-800">{formatUsd(conferencePrice)}</div>
+                    <div className="text-xs text-slate-500 font-medium">
+                      {formatWeekRange(conferenceWeeks, lang)} ({t.conference.timelineSuffix})
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="text-end">
-                <div className="font-black text-emerald-800">{t.conference.price}</div>
-                <div className="text-xs text-slate-500 font-medium">{t.conference.timeline}</div>
-              </div>
-            </div>
-            <p className="text-sm text-slate-600 mb-3">{t.conference.description}</p>
-            <ul className="space-y-1.5 mb-3">
+            </label>
+            <p className="text-sm text-slate-600 mb-3 ps-9">{t.conference.description}</p>
+            <ul className="space-y-1.5 mb-3 ps-9">
               {t.conference.includes.map((line, i) => (
                 <li key={i} className="flex gap-2 text-sm text-slate-600">
                   <Plus size={12} className="text-amber-500 shrink-0 mt-1" />
@@ -199,7 +225,7 @@ export function ClientAddonsSection() {
                 </li>
               ))}
             </ul>
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-3 ps-9">
               {t.conference.breakdown.map((row) => (
                 <span
                   key={row.label}
@@ -209,11 +235,48 @@ export function ClientAddonsSection() {
                 </span>
               ))}
             </div>
-            <p className="text-xs font-semibold text-amber-900 bg-amber-50 border-2 border-amber-200 rounded-xl px-3 py-2.5 flex gap-2 leading-relaxed">
+
+            {/* Advanced add-ons — nested option */}
+            <div
+              className={cn(
+                "ms-9 mb-3 rounded-2xl border-2 p-4 transition-all",
+                !selection.conference && "opacity-50 pointer-events-none",
+                selection.conferenceAdvanced
+                  ? "border-amber-300 bg-amber-50/60"
+                  : "border-slate-200 bg-white"
+              )}
+            >
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selection.conferenceAdvanced}
+                  disabled={!selection.conference}
+                  onChange={(e) =>
+                    setSelection((s) => ({ ...s, conferenceAdvanced: e.target.checked }))
+                  }
+                  className="mt-0.5 w-4 h-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500 shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <span className="font-bold text-slate-900 text-sm">{t.conference.advanced.title}</span>
+                    <span className="text-xs font-semibold text-amber-800">
+                      {t.conference.advanced.priceNote} · {t.conference.advanced.timelineNote}
+                    </span>
+                  </div>
+                  <ol className="space-y-1 list-decimal list-inside text-sm text-slate-600">
+                    {t.conference.advanced.includes.map((line, i) => (
+                      <li key={i}>{line}</li>
+                    ))}
+                  </ol>
+                </div>
+              </label>
+            </div>
+
+            <p className="text-xs font-semibold text-amber-900 bg-amber-50 border-2 border-amber-200 rounded-xl px-3 py-2.5 flex gap-2 leading-relaxed ms-9">
               <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-600" />
               {t.conference.disclaimer}
             </p>
-          </CheckboxCard>
+          </div>
         </div>
 
         {/* CMS */}

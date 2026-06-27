@@ -5,6 +5,7 @@ export const addonPrices = {
   mobileUx: 300,
   mobileApps: 2000,
   conference: 2800,
+  conferenceAdvanced: 1000,
   cmsStrapi: 1300,
   cmsCustom: 2500,
 } as const;
@@ -15,6 +16,7 @@ export const addonTimelineWeeks = {
   website: { min: clientTimelineWeeks.min, max: clientTimelineWeeks.max },
   mobile: { min: 8, max: 9 },
   conference: { min: 5, max: 6 },
+  conferenceAdvanced: 1,
   cmsStrapi: { min: 2, max: 2.5 },
   cmsCustom: { min: 5, max: 6 },
 } as const;
@@ -32,14 +34,27 @@ export type CmsChoice = "none" | "strapi" | "custom";
 export type AddonSelection = {
   mobile: boolean;
   conference: boolean;
+  conferenceAdvanced: boolean;
   cms: CmsChoice;
 };
 
 export const defaultAddonSelection: AddonSelection = {
   mobile: false,
   conference: false,
+  conferenceAdvanced: false,
   cms: "none",
 };
+
+export function conferenceDurationWeeks(advanced: boolean): WeekRange {
+  const c = addonTimelineWeeks.conference;
+  if (!advanced) return { min: c.min, max: c.max };
+  const extra = addonTimelineWeeks.conferenceAdvanced;
+  return { min: c.min + extra, max: c.max + extra };
+}
+
+export function conferenceTotalPrice(advanced: boolean): number {
+  return addonPrices.conference + (advanced ? addonPrices.conferenceAdvanced : 0);
+}
 
 export function formatUsd(amount: number): string {
   return `$${amount.toLocaleString("en-US")}`;
@@ -57,7 +72,9 @@ export function computeAddonTotal(selection: AddonSelection): number {
   if (selection.mobile) {
     total += addonPrices.mobileApps + addonPrices.mobileUx;
   }
-  if (selection.conference) total += addonPrices.conference;
+  if (selection.conference) {
+    total += conferenceTotalPrice(selection.conferenceAdvanced);
+  }
   if (selection.cms === "strapi") total += addonPrices.cmsStrapi;
   if (selection.cms === "custom") total += addonPrices.cmsCustom;
   return total;
@@ -71,7 +88,7 @@ export function computeAddonTotal(selection: AddonSelection): number {
 export function computeTotalDuration(selection: AddonSelection): WeekRange {
   const w = addonTimelineWeeks.website;
   const m = addonTimelineWeeks.mobile;
-  const c = addonTimelineWeeks.conference;
+  const c = conferenceDurationWeeks(selection.conferenceAdvanced);
 
   let endMin: number;
   let endMax: number;
@@ -119,16 +136,27 @@ export function computeAddonTimelines(selection: AddonSelection): TimelineLine[]
     });
   }
   if (selection.conference) {
+    const confWeeks = conferenceDurationWeeks(selection.conferenceAdvanced);
+    const confLabelEn =
+      confWeeks.min === confWeeks.max
+        ? `${confWeeks.min} weeks`
+        : `${confWeeks.min}–${confWeeks.max} weeks`;
+    const confLabelAr =
+      confWeeks.min === confWeeks.max
+        ? `${confWeeks.min} أسابيع`
+        : `${confWeeks.min}–${confWeeks.max} أسابيع`;
     const afterEn = selection.mobile
       ? "starts after native apps complete (week 8–9)"
       : "starts after website complete (week 6–7)";
     const afterAr = selection.mobile
       ? "يبدأ بعد اكتمال التطبيقات (الأسبوع 8–9)"
       : "يبدأ بعد اكتمال الموقع (الأسبوع 6–7)";
+    const advancedEn = selection.conferenceAdvanced ? ", incl. advanced add-ons" : "";
+    const advancedAr = selection.conferenceAdvanced ? "، شامل الإضافات المتقدمة" : "";
     lines.push({
       key: "conference",
-      labelEn: `Conference module: ${addonTimelines.conference.labelEn} (${afterEn})`,
-      labelAr: `وحدة المؤتمرات: ${addonTimelines.conference.labelAr} (${afterAr})`,
+      labelEn: `Conference module: ${confLabelEn} (${afterEn}${advancedEn})`,
+      labelAr: `وحدة المؤتمرات: ${confLabelAr} (${afterAr}${advancedAr})`,
     });
   }
   if (selection.cms === "strapi") {

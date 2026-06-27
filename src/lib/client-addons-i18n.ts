@@ -28,8 +28,15 @@ export const addonsCopy: Record<
       includes: string[];
       breakdown: { label: string; value: string }[];
       timeline: string;
+      timelineSuffix: string;
       price: string;
       disclaimer: string;
+      advanced: {
+        title: string;
+        priceNote: string;
+        timelineNote: string;
+        includes: string[];
+      };
     };
     cms: {
       title: string;
@@ -96,9 +103,16 @@ export const addonsCopy: Record<
         { label: "Mobile (iOS + Android)", value: "$1,000" },
       ],
       timeline: "5–6 weeks (separate module schedule)",
+      timelineSuffix: "separate module schedule",
       price: formatUsd(addonPrices.conference),
       disclaimer:
         "Important: Conference module cost and timeline are indicative only. They may change once OAPEC finalizes business rules, workflows, integrations, and the page list. Business scope for this module is not finalized yet.",
+      advanced: {
+        title: "Advanced add-ons",
+        priceNote: `+${formatUsd(addonPrices.conferenceAdvanced)}`,
+        timelineNote: "+1 week",
+        includes: ["Tickets", "Reservation", "Event monitoring"],
+      },
     },
     cms: {
       title: "Content management (website + mobile)",
@@ -202,9 +216,16 @@ export const addonsCopy: Record<
         { label: "تطبيقات (iOS + Android)", value: "$1,000" },
       ],
       timeline: "5–6 أسابيع (جدول الوحدة منفصل)",
+      timelineSuffix: "جدول الوحدة منفصل",
       price: formatUsd(addonPrices.conference),
       disclaimer:
         "مهم: تكلفة وجدول وحدة المؤتمرات تقديرية فقط. قد تتغير بعد اعتماد أوابك للقواعد التجارية وسير العمل والتكاملات وقائمة الصفحات. نطاق الأعمال لهذه الوحدة غير نهائي بعد.",
+      advanced: {
+        title: "إضافات متقدمة",
+        priceNote: `+${formatUsd(addonPrices.conferenceAdvanced)}`,
+        timelineNote: "+أسبوع واحد",
+        includes: ["التذاكر", "الحجز", "مراقبة الفعاليات"],
+      },
     },
     cms: {
       title: "إدارة المحتوى (الموقع + التطبيق)",
